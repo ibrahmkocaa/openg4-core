@@ -36,18 +36,10 @@ namespace Mat
     auto U238 = new G4Isotope("U238", 92, 238, 238.05 * g / mole);
     auto O16 = new G4Isotope("O16", 8, 16, 16.00 * g / mole);
 
-    // U elementini izotoplarla kur (normalize edilmiş fraksiyonlarla)
-    // OpenMC atom yoğunluklarından:
-    // U234=4.4843e-6, U235=5.5815e-4, U238=2.2408e-2
-    G4double sumU = 4.4843e-6 + 5.5815e-4 + 2.2408e-2;
-    G4double fU234 = 4.4843e-6 / sumU;
-    G4double fU235 = 5.5815e-4 / sumU;
-    G4double fU238 = 2.2408e-2 / sumU;
-
     auto Uenr = new G4Element("EnrichedU", "U", 3);
-    Uenr->AddIsotope(U234, fU234);
-    Uenr->AddIsotope(U235, fU235);
-    Uenr->AddIsotope(U238, fU238);
+    Uenr->AddIsotope(U234, 0.0197);
+    Uenr->AddIsotope(U235, 2.45);
+    Uenr->AddIsotope(U238, 97.53);
 
     // Oksijen elementini sadece O16 ile tanımla
     auto Oxy = new G4Element("Oxygen16", "O", 1);
