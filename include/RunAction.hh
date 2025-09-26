@@ -3,6 +3,10 @@
 
 #include "G4UserRunAction.hh"
 #include "globals.hh"
+#include <map>
+#include <string>
+
+
 
 class RunAction : public G4UserRunAction
 {
@@ -21,6 +25,17 @@ class RunAction : public G4UserRunAction
     static G4int totalNeutrons;
     static G4int elasticCount;
     static G4int inelasticCount;
+
+    // Hacim bazlı enerji depozisyonu
+    static std::map<std::string, G4double> volumeEnergy;
+    static std::map<std::string, G4int> volumeFission;
+    static std::map<std::string, G4int> volumeCapture;
+
+    // Fission sonrası parçacık sayıları
+    static G4int producedNeutrons;
+    static G4int producedGammas;
+    static G4int producedElectrons;
+    static G4int producedFragments;
 };
 
 #endif
