@@ -1,0 +1,3 @@
+/Users/ibo/Desktop/openg4-core/build/CMakeFiles/main.dir
+/Users/ibo/Desktop/openg4-core/build/CMakeFiles/edit_cache.dir
+/Users/ibo/Desktop/openg4-core/build/CMakeFiles/rebuild_cache.dir
