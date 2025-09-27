@@ -3,7 +3,6 @@
 #include "G4Track.hh"
 #include "G4SystemOfUnits.hh"
 #include <iostream>
-#include "RunAction.hh"
 
 TrackingAction::TrackingAction() {}
 TrackingAction::~TrackingAction() {}
@@ -17,7 +16,6 @@ void TrackingAction::PostUserTrackingAction(const G4Track *track)
 {
     if (track->GetDefinition()->GetParticleName() == "neutron")
     {
-        RunAction::totalNeutrons++;
         auto status = track->GetTrackStatus();
 
         // Kaç adım attığını yazdır
@@ -48,18 +46,6 @@ void TrackingAction::PostUserTrackingAction(const G4Track *track)
                     G4cout << ">>> Escaped neutron at "
                            << pos << " [mm]" << G4endl;
                 }
-            }
-        }
-    }
-    auto status = track->GetTrackStatus();
-    if (status == fStopAndKill || status == fKillTrackAndSecondaries)
-    {
-        const G4VProcess *proc = track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep();
-        if (proc)
-        {
-            if (proc->GetProcessName() == "Transportation")
-            {
-                RunAction::escapeCount++;
             }
         }
     }

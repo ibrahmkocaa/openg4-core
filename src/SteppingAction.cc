@@ -4,7 +4,6 @@
 #include "G4VProcess.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4SystemOfUnits.hh"
-#include "RunAction.hh"
 #include <iostream>
 
 SteppingAction::SteppingAction() {}
@@ -36,8 +35,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
                << " deposited " << edep / MeV << " MeV"
                << " in volume " << volName
                << G4endl;
-        // RunAction’daki map’e ekle
-        RunAction::volumeEnergy[volName] += edep;
     }
 
     // -------------------------------
@@ -67,13 +64,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         // --- Fission ---
         if (procName == "nFission" || procName == "nFissionHP")
         {
-            RunAction::fissionCount++;
-
-            const G4VPhysicalVolume *vol = preStep->GetPhysicalVolume();
-            if (vol)
-            {
-                RunAction::volumeFission[vol->GetName()]++;
-            }
 
             G4ThreeVector pos = postStep->GetPosition();
             G4cout << ">>> " << procName
@@ -86,23 +76,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
                 G4String pname = sec->GetDefinition()->GetParticleName();
                 G4ThreeVector spos = sec->GetPosition();
                 G4double sekE = sec->GetKineticEnergy();
-
-                if (sec->GetDefinition()->GetParticleType() == "nucleus")
-                {
-                    RunAction::producedFragments++;
-                }
-                else if (pname == "neutron")
-                {
-                    RunAction::producedNeutrons++;
-                }
-                else if (pname == "gamma")
-                {
-                    RunAction::producedGammas++;
-                }
-                else if (pname == "e-" || pname == "beta-")
-                {
-                    RunAction::producedElectrons++;
-                }
 
                 // Yazdırma
                 if (sec->GetDefinition()->GetParticleType() == "nucleus")
@@ -127,30 +100,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         // --- Capture ---
         else if (procName == "nCapture" || procName == "nCaptureHP")
         {
-            RunAction::captureCount++;
-
-            // Hacim bazlı sayım
-            const G4VPhysicalVolume *vol = preStep->GetPhysicalVolume();
-            if (vol)
-            {
-                RunAction::volumeCapture[vol->GetName()]++;
-            }
-
             G4ThreeVector pos = postStep->GetPosition();
             G4cout << ">>> " << procName
                    << " at position " << pos << " [mm]" << G4endl;
-        }
-
-        // --- Elastic scattering ---
-        else if (procName == "hadElastic")
-        {
-            RunAction::elasticCount++;
-        }
-
-        // --- Inelastic scattering ---
-        else if (procName == "neutronInelastic")
-        {
-            RunAction::inelasticCount++;
         }
     }
 }
