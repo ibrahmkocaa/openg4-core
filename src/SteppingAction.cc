@@ -4,6 +4,8 @@
 #include "G4VProcess.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4RunManager.hh"   // <-- eklendi
+#include "G4Event.hh"        // <-- eklendi
 #include <iostream>
 
 SteppingAction::SteppingAction() {}
@@ -15,6 +17,11 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     const G4StepPoint *preStep = step->GetPreStepPoint();
     const G4StepPoint *postStep = step->GetPostStepPoint();
     const G4VProcess *process = postStep->GetProcessDefinedStep();
+
+    // Event ID bilgisini al
+    G4int eventID = -1;
+    if (auto evt = G4RunManager::GetRunManager()->GetCurrentEvent())
+        eventID = evt->GetEventID();
 
     // -------------------------------
     // 1. Enerji depozisyonu analizi
@@ -31,7 +38,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4double edep = step->GetTotalEnergyDeposit();
     if (edep > 0)
     {
-        G4cout << ">>> " << particle
+        G4cout << "[Event " << eventID << "] "
+               << particle
                << " deposited " << edep / MeV << " MeV"
                << " in volume " << volName
                << G4endl;
@@ -46,7 +54,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4ThreeVector pos = postStep->GetPosition();
         G4double ekin = track->GetKineticEnergy();
 
-        G4cout << "    [History] Step "
+        G4cout << "[Event " << eventID << "] "
+               << "[History] Step "
                << track->GetCurrentStepNumber()
                << " : " << procName
                << " at " << pos
@@ -64,9 +73,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         // --- Fission ---
         if (procName == "nFission" || procName == "nFissionHP")
         {
-
             G4ThreeVector pos = postStep->GetPosition();
-            G4cout << ">>> " << procName
+            G4cout << "[Event " << eventID << "] "
+                   << procName
                    << " at position " << pos << " [mm]" << G4endl;
 
             // İkinci kuşak parçacıklar
@@ -83,14 +92,16 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
                     G4int Z = sec->GetDefinition()->GetAtomicNumber();
                     G4int A = sec->GetDefinition()->GetAtomicMass();
 
-                    G4cout << "    ---> Fission fragment: " << pname
+                    G4cout << "    [Event " << eventID << "] "
+                           << "---> Fission fragment: " << pname
                            << " (Z=" << Z << ", A=" << A << ")"
                            << " with E=" << sekE / MeV << " MeV"
                            << " at " << spos << " [mm]" << G4endl;
                 }
                 else
                 {
-                    G4cout << "    ---> Secondary: " << pname
+                    G4cout << "    [Event " << eventID << "] "
+                           << "---> Secondary: " << pname
                            << " with E=" << sekE / MeV << " MeV"
                            << " at " << spos << " [mm]" << G4endl;
                 }
@@ -101,7 +112,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         else if (procName == "nCapture" || procName == "nCaptureHP")
         {
             G4ThreeVector pos = postStep->GetPosition();
-            G4cout << ">>> " << procName
+            G4cout << "[Event " << eventID << "] "
+                   << procName
                    << " at position " << pos << " [mm]" << G4endl;
         }
     }
