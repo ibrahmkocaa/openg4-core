@@ -2,8 +2,9 @@
 #include "G4VProcess.hh"
 #include "G4Track.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4RunManager.hh"   // <-- eklendi
-#include "G4Event.hh"        // <-- eklendi
+#include "G4RunManager.hh"
+#include "G4Event.hh"
+#include "G4AnalysisManager.hh"   // <-- CSV için eklendi
 #include <iostream>
 
 TrackingAction::TrackingAction() {}
@@ -23,41 +24,44 @@ void TrackingAction::PostUserTrackingAction(const G4Track *track)
 
     if (track->GetDefinition()->GetParticleName() == "neutron")
     {
+        auto analysisManager = G4AnalysisManager::Instance();
         auto status = track->GetTrackStatus();
 
-        // Kaç adım attığını yazdır
+        // Kaç adım attı
         G4int nSteps = track->GetCurrentStepNumber();
-        G4cout << "[Event " << eventID << "] "
-               << "Neutron finished after "
-               << nSteps << " steps." << G4endl;
 
-        // Son kinetik enerjisini yazdır
+        // Son kinetik enerji
         G4double eFinal = track->GetKineticEnergy();
-        G4cout << "[Event " << eventID << "] "
-               << "Neutron final energy: "
-               << eFinal / MeV << " MeV" << G4endl;
 
         // Time of flight (global time)
         G4double tof = track->GetGlobalTime();
-        G4cout << "[Event " << eventID << "] "
-               << "Neutron time of flight: "
-               << tof / ns << " ns" << G4endl;
 
-        // Escape olmuş mu kontrol et (Transportation ile bitmişse)
+        // Escape kontrolü
+        G4String escaped = "false";
+        G4double x = 0, y = 0, z = 0;
+
         if (status == fStopAndKill || status == fKillTrackAndSecondaries)
         {
             const G4VProcess *proc = track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep();
-            if (proc)
+            if (proc && proc->GetProcessName() == "Transportation")
             {
-                G4String pname = proc->GetProcessName();
-                if (pname == "Transportation")
-                {
-                    G4ThreeVector pos = track->GetPosition();
-                    G4cout << "[Event " << eventID << "] "
-                           << "Escaped neutron at "
-                           << pos << " [mm]" << G4endl;
-                }
+                G4ThreeVector pos = track->GetPosition();
+                escaped = "true";
+                x = pos.x() / mm;
+                y = pos.y() / mm;
+                z = pos.z() / mm;
             }
         }
+
+        // CSV’ye kaydet
+        analysisManager->FillNtupleIColumn(4, 0, eventID);
+        analysisManager->FillNtupleIColumn(4, 1, nSteps);
+        analysisManager->FillNtupleDColumn(4, 2, eFinal / MeV);
+        analysisManager->FillNtupleDColumn(4, 3, tof / ns);
+        analysisManager->FillNtupleSColumn(4, 4, escaped);
+        analysisManager->FillNtupleDColumn(4, 5, x);
+        analysisManager->FillNtupleDColumn(4, 6, y);
+        analysisManager->FillNtupleDColumn(4, 7, z);
+        analysisManager->AddNtupleRow(4);
     }
 }
