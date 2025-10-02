@@ -25,7 +25,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     if (!stepLog.is_open())
     {
         std::ostringstream fname;
-        fname << "steps_thread" << G4Threading::G4GetThreadId() << ".log";
+        fname << "output/steps_thread" << G4Threading::G4GetThreadId() << ".log";
         stepLog.open(fname.str(), std::ios::out);
     }
 

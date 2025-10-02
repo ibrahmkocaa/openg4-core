@@ -15,11 +15,11 @@ int main(int argc, char **argv)
     namespace fs = std::filesystem;
     for (const auto &entry : fs::directory_iterator("."))
     {
-        if (entry.path().string().find("steps_thread") != std::string::npos)
+        if (entry.path().string().find("output/steps_thread") != std::string::npos)
         {
             fs::remove(entry.path());
         }
-        else if (entry.path().extension() == ".root")
+        else if (entry.path().extension() == "output/.root")
         {
             fs::remove(entry.path());
         }

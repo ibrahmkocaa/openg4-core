@@ -45,7 +45,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   // Fuel / Clad / Cell
   // =======================
   auto solidFuel = new G4Tubs("Fuel", 0, fuel_or, pin_length / 2, 0. * deg, 360. * deg);
-  auto logicFuel = new G4LogicalVolume(solidFuel, Mat::Water(), "Fuel");
+  auto logicFuel = new G4LogicalVolume(solidFuel, Mat::Fuel(), "Fuel");
 
   auto solidClad = new G4Tubs("Clad", fuel_or, clad_or, pin_length / 2, 0. * deg, 360. * deg);
   auto logicClad = new G4LogicalVolume(solidClad, Mat::Clad(), "Clad");

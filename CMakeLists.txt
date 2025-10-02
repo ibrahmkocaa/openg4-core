@@ -16,3 +16,4 @@ target_link_libraries(main ${Geant4_LIBRARIES})
 
 # 'macros', 'config', 'output' klasörleri derleme dizinine kopyalanıyor.
 file(COPY ${PROJECT_SOURCE_DIR}/macros DESTINATION ${CMAKE_BINARY_DIR}) 
+file(COPY ${PROJECT_SOURCE_DIR}/output DESTINATION ${CMAKE_BINARY_DIR}) 

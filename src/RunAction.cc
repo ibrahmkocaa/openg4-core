@@ -21,7 +21,7 @@ void RunAction::BeginOfRunAction(const G4Run *)
     auto analysisManager = G4AnalysisManager::Instance();
 
     // Çıktı dosyasını aç
-    analysisManager->OpenFile("results"); // sonuç: results.root
+    analysisManager->OpenFile("output/results"); // sonuç: results.root
 
     // --- Energy deposition ---
     analysisManager->CreateNtuple("energy", "Energy deposition");
