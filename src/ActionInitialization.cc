@@ -1,7 +1,6 @@
 #include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
-#include "TrackingAction.hh"
 #include "RunAction.hh"
 
 ActionInitialization::ActionInitialization() {}
@@ -11,10 +10,10 @@ void ActionInitialization::Build() const
 {
     SetUserAction(new PrimaryGeneratorAction());
     SetUserAction(new SteppingAction());
-    SetUserAction(new TrackingAction());
-    SetUserAction(new RunAction());
+    SetUserAction(new RunAction());   // Worker’larda
 }
+
 void ActionInitialization::BuildForMaster() const
 {
-    // Master için sadece toplama işleri olabilir (şimdilik boş)
+    SetUserAction(new RunAction());   // Master’da
 }

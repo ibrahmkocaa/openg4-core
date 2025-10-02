@@ -1,15 +1,30 @@
 // Gerekli Geant4 sınıfları ve C++ kütüphaneleri dahil ediliyor.
-#include "G4RunManagerFactory.hh"       
-#include "G4UImanager.hh"               
-#include "G4UIExecutive.hh"             
-#include "G4VisExecutive.hh"            
-#include "QGSP_BERT_HP.hh"           
-#include "DetectorConstruction.hh"  
+#include "G4RunManagerFactory.hh"
+#include "G4UImanager.hh"
+#include "G4UIExecutive.hh"
+#include "G4VisExecutive.hh"
+#include "QGSP_BERT_HP.hh"
+#include "DetectorConstruction.hh"
 #include "ActionInitialization.hh"
+#include <filesystem>
+#include <iostream>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    auto* runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+
+    namespace fs = std::filesystem;
+    for (const auto &entry : fs::directory_iterator("."))
+    {
+        if (entry.path().string().find("steps_thread") != std::string::npos)
+        {
+            fs::remove(entry.path());
+        }
+        else if (entry.path().extension() == ".root")
+        {
+            fs::remove(entry.path());
+        }
+    }
+    auto *runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
     // Kullanıcı tanımlı sınıflar RunManager'a atanıyor.
     runManager->SetUserInitialization(new DetectorConstruction());
@@ -17,19 +32,22 @@ int main(int argc, char** argv)
     runManager->SetUserInitialization(new ActionInitialization());
 
     // Görselleştirme yöneticisi başlatılıyor.
-    G4VisManager* visManager = new G4VisExecutive();
+    G4VisManager *visManager = new G4VisExecutive();
     visManager->Initialize();
 
     // UI yöneticisi alınıyor
-    G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
-    if (argc == 1) {
+    if (argc == 1)
+    {
         // UI mod: grafik arayüzlü çalıştırma
-        G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+        G4UIExecutive *ui = new G4UIExecutive(argc, argv);
         UImanager->ApplyCommand("/control/execute macros/vis.mac"); // Görselleştirme makrosu çalıştırılıyor.
         ui->SessionStart();
         delete ui;
-    } else {
+    }
+    else
+    {
         // Batch mod: komut satırından makro dosyası ile çalıştırma.
         G4String command = "/control/execute ";
         G4String filename = argv[1];

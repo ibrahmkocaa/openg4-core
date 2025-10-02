@@ -13,6 +13,7 @@ namespace Mat
   G4Material *Water(); // G4_WATER
   G4Material *Fuel();  // UO2 (ρ=10.97 g/cm3)
   G4Material *Clad();  // Zr   (ρ=6.52 g/cm3)
+  G4Material *B4C();   // Bor Karbür (ρ=2.52 g/cm3)
 }
 
 #endif
