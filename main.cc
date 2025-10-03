@@ -13,17 +13,17 @@ int main(int argc, char **argv)
 {
 
     namespace fs = std::filesystem;
-    for (const auto &entry : fs::directory_iterator("."))
+    for (const auto &entry : fs::recursive_directory_iterator("./output"))
     {
-        if (entry.path().string().find("output/steps_thread") != std::string::npos)
+        if (entry.path().filename().string().find("steps_thread") != std::string::npos)
         {
             fs::remove(entry.path());
         }
-        else if (entry.path().extension() == "output/.root")
+        else if (entry.path().extension() == ".root")
         {
             fs::remove(entry.path());
         }
-    }
+    };
     auto *runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
     // Kullanıcı tanımlı sınıflar RunManager'a atanıyor.
